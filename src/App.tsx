@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import { 
   Mail, 
-  Settings, 
   LayoutDashboard, 
   LogOut, 
   ExternalLink,
@@ -10,9 +9,7 @@ import {
   Inbox,
   RefreshCw,
   Loader2,
-  AlertTriangle,
   Heart,
-  Share2,
   Archive,
   Zap,
   Activity,
@@ -20,22 +17,12 @@ import {
   Minimize2,
   Search,
   EyeOff,
-  History,
-  Clock,
-  Layout,
-  BookOpen,
   Edit3,
-  Brain,
   Save,
-  CheckCircle,
   Telescope,
-  Download,
   FileText,
   XCircle as LucideXCircle,
-  Filter,
-  ArrowUpDown,
   TrendingUp,
-  BarChart3,
   Trash2,
   ShieldCheck,
   ShieldAlert,
@@ -62,16 +49,16 @@ export default function App() {
   // Beyond Intelligence States
   const [isFullReader, setIsFullReader] = useState(false);
   const [isZenMode, setIsZenMode] = useState(false);
-  const [isGhostMode, setIsGhostMode] = useState(false);
+  const [isGhostMode] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   
   // Workbench & Intel States
   const [isNotesOpen, setIsNotesOpen] = useState(false);
   const [isSummarizing, setIsSummarizing] = useState(false);
-  const [isDrafting, setIsDrafting] = useState(false);
+  const [, setIsDrafting] = useState(false);
   const [currentNote, setCurrentNote] = useState('');
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [ , setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
 
   // Feed Filter States
   const [feedCategory, setFeedCategory] = useState<string>('All');
@@ -79,7 +66,7 @@ export default function App() {
   const [highSignalOnly, setHighSignalOnly] = useState(false);
 
   // IQ Expansion States
-  const [showSmartPurge, setShowSmartPurge] = useState(false);
+  const [ , setShowSmartPurge] = useState(false);
   const [refreshDiscovery, setRefreshDiscovery] = useState(0); // For shuffling on refresh
 
   const stats = useMemo(() => {
@@ -186,10 +173,6 @@ export default function App() {
     return newsletters.filter(n => n.subject.toLowerCase().includes(searchQuery.toLowerCase()) || n.sender.toLowerCase().includes(searchQuery.toLowerCase()));
   }, [newsletters, searchQuery]);
 
-  const senderHistory = useMemo(() => {
-    if (!selectedNewsletter) return [];
-    return newsletters.filter(n => n.sender === selectedNewsletter.sender && n.id !== selectedNewsletter.id).slice(0, 5);
-  }, [selectedNewsletter, newsletters]);
 
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => {
@@ -514,5 +497,5 @@ export default function App() {
 
 function NavButton({ icon, label, active, onClick }: any) { return (<div onClick={onClick} className={`nav-item ${active ? 'active' : ''}`} style={{ padding: '10px 18px', cursor: 'pointer' }}>{icon}<span className="mono" style={{ fontSize: '0.65rem' }}>{label}</span></div>); }
 function SubscriptionCard({ sub, onClick }: { sub: Subscription, onClick: () => void }) { return (<div className="glass-card" style={{ padding: '24px', cursor: 'pointer' }} onClick={onClick}> <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}><div style={{ padding: '10px', background: 'rgba(255, 255, 255, 0.03)', borderRadius: '10px', border: '1px solid var(--glass-border)' }}><Mail size={18} color="#fff" /></div><div className="mono" style={{ fontSize: '0.6rem' }}>{sub.category}</div></div> <h3 style={{ marginBottom: '4px', fontWeight: '700', color: '#fff', fontSize: '1.1rem' }}>{sub.senderName}</h3> <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: '24px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sub.senderEmail}</p> <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--glass-border)', paddingTop: '16px' }}><div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><div style={{ width: '4px', height: '4px', borderRadius: '2px', background: (sub.engagementScore || 0) > 50 ? '#10b981' : '#f59e0b' }} /><span className="mono" style={{ fontSize: '0.65rem' }}>SIGNAL: {sub.engagementScore}%</span></div><ChevronRight size={14} color="var(--text-muted)" /></div> </div>); }
-function DiscoveryCard({ rec }: { rec: Recommendation }) { return (<div className="glass-card discovery-card" style={{ padding: '28px', borderStyle: 'dashed', borderOpacity: 0.3, transition: 'all 0.3s ease' }}> <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}><span className="mono" style={{ fontSize: '0.55rem', background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '4px', color: 'var(--accent)' }}>RECOMMENDED // {rec.category.toUpperCase()}</span></div> <h3 style={{ marginBottom: '8px', fontWeight: '800', fontSize: '1rem' }}>{rec.name}</h3> <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', lineHeight: '1.5', marginBottom: '24px' }}>{rec.description}</p> <button className="btn-secondary mono" style={{ width: '100%', justifyContent: 'center', fontSize: '0.65rem' }} onClick={() => window.open(rec.url, '_blank')}><ExternalLink size={12} style={{ marginRight: '8px' }} /> SOURCE INTEL</button> </div>); }
+function DiscoveryCard({ rec }: { rec: Recommendation }) { return (<div className="glass-card discovery-card" style={{ padding: '28px', borderStyle: 'dashed', borderColor: 'rgba(255,255,255,0.1)', transition: 'all 0.3s ease' }}> <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}><span className="mono" style={{ fontSize: '0.55rem', background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '4px', color: 'var(--accent)' }}>RECOMMENDED // {rec.category.toUpperCase()}</span></div> <h3 style={{ marginBottom: '8px', fontWeight: '800', fontSize: '1rem' }}>{rec.name}</h3> <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', lineHeight: '1.5', marginBottom: '24px' }}>{rec.description}</p> <button className="btn-secondary mono" style={{ width: '100%', justifyContent: 'center', fontSize: '0.65rem' }} onClick={() => window.open(rec.url, '_blank')}><ExternalLink size={12} style={{ marginRight: '8px' }} /> SOURCE INTEL</button> </div>); }
 function NewsletterRow({ newsletter, onClick, onHeart }: any) { return (<div className="glass-card" onClick={onClick} style={{ padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}> <div style={{ display: 'flex', gap: '20px', alignItems: 'center', flex: 1 }}> <button onClick={(e) => { e.stopPropagation(); onHeart(e); }} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: newsletter.isFavorite ? '#ef4444' : 'rgba(255,255,255,0.1)' }}><Heart size={18} fill={newsletter.isFavorite ? '#ef4444' : 'transparent'} /></button> <div className="mono" style={{ color: '#fff', fontSize: '0.75rem', width: '30px' }}>{newsletter.readingTime}M</div> <div style={{ flex: 1 }}><div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><h4 style={{ fontWeight: '700', marginBottom: '2px', color: '#fff', fontSize: '0.95rem' }}>{newsletter.subject}</h4><span className="mono" style={{ fontSize: '0.5rem', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px', color: 'var(--text-muted)' }}>{newsletter.category?.toUpperCase()}</span></div><p className="mono" style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'none' }}>{newsletter.sender.split('<')[0].trim()} • {newsletter.date.split(',')[0]}</p></div> </div> <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>{newsletter.notes && <Edit3 size={14} color="#fff" />}{newsletter.isArchived && <Archive size={14} color="#10b981" />}<ChevronRight size={18} color="var(--text-muted)" /></div> </div>); }
