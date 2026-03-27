@@ -72,6 +72,15 @@ export default function App() {
   const [ , setShowSmartPurge] = useState(false);
   const [refreshDiscovery, setRefreshDiscovery] = useState(0); // For shuffling on refresh
 
+  // Responsive Hook
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  const isMobile = windowWidth < 768;
+
   const stats = useMemo(() => {
     return {
       total: subscriptions.length,
@@ -427,11 +436,11 @@ export default function App() {
         <AnimatePresence mode="wait">
           {view === 'dashboard' && (
             <motion.div key="dashboard" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', marginBottom: '40px' }}>
-                 <div className="glass-card hero-stats" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', padding: '40px' }}>
-                    <div><div className="mono">Active Nodes</div><div className="stat-value" style={{ fontSize: '3rem' }}>{stats.total}</div></div>
-                    <div><div className="mono">Weekly Flow</div><div className="stat-value" style={{ fontSize: '3rem' }}>{stats.weekly}</div></div>
-                    <div><div className="mono">Signal Index</div><div className="stat-value" style={{ fontSize: '3rem' }}>{stats.signal}%</div></div>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', gap: '24px', marginBottom: '40px' }}>
+                 <div className="glass-card hero-stats" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '20px', padding: isMobile ? '20px' : '40px' }}>
+                    <div><div className="mono">Active Nodes</div><div className="stat-value">{stats.total}</div></div>
+                    <div><div className="mono">Weekly Flow</div><div className="stat-value">{stats.weekly}</div></div>
+                    <div><div className="mono">Signal Index</div><div className="stat-value">{stats.signal}%</div></div>
                  </div>
                  <div className="glass-card" style={{ padding: '32px', display: 'flex', flexDirection: 'column', borderColor: deadNodes.length > 0 ? '#f59e0b' : 'var(--glass-border)' }}>
                     <div className="mono" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
@@ -458,7 +467,7 @@ export default function App() {
                  </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', overflowX: 'auto', paddingBottom: '8px' }}>
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', overflowX: 'auto', paddingBottom: '8px', whiteSpace: 'nowrap' }}>
                   {dashboardCategories.map(cat => ( <button key={cat} onClick={() => setFilterTag(cat || 'All')} className="mono" style={{ padding: '6px 14px', borderRadius: '8px', background: filterTag === cat ? 'white' : 'rgba(255,255,255,0.03)', color: filterTag === cat ? '#000' : 'var(--text-muted)', border: '1px solid var(--glass-border)', cursor: 'pointer', fontWeight: '700', fontSize: '0.65rem' }}>{cat?.toUpperCase()}</button> ))}
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>{filteredSubs.map(sub => (<SubscriptionCard key={sub.id} sub={sub} onClick={() => setSelectedSub(sub)} />))}</div>
@@ -497,18 +506,18 @@ export default function App() {
         <AnimatePresence>
           {selectedNewsletter && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.98)', zIndex: 1500, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => { setSelectedNewsletter(null); setIsFullReader(false); setIsNotesOpen(false); }}>
-               <motion.div initial={{ scale: 0.98 }} animate={{ scale: 1, height: isFullReader ? '100vh' : '92vh', width: isFullReader ? '100vw' : '1200px' }} className={isFullReader ? '' : 'glass-card'} style={{ background: '#000', overflowY: 'auto', display: 'flex', position: 'relative', border: isFullReader ? 'none' : '1px solid var(--glass-border)', borderRadius: isFullReader ? '0' : '24px' }} onClick={e => e.stopPropagation()}>
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-                     <header style={{ padding: '24px 40px', borderBottom: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flex: 1 }}>
-                           <button onClick={() => setIsZenMode(!isZenMode)} style={{ background: isZenMode ? '#fff' : 'transparent', border: '1px solid var(--glass-border)', borderRadius: '10px', padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: isZenMode ? '#000' : '#fff' }}><Zap size={14} /><span className="mono" style={{ fontSize: '0.7rem' }}>ZEN</span></button>
-                           <button onClick={runDeepScan} disabled={isSummarizing} style={{ background: 'transparent', border: '1px solid var(--glass-border)', borderRadius: '10px', padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: '#fff' }}><Telescope size={14} /> <span className="mono" style={{ fontSize: '0.7rem' }}>DEEP SCAN</span></button>
-                           <button onClick={() => setIsNotesOpen(!isNotesOpen)} style={{ background: isNotesOpen ? '#fff' : 'transparent', border: '1px solid var(--glass-border)', borderRadius: '10px', padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: isNotesOpen ? '#000' : '#fff' }}><Edit3 size={14} /> <span className="mono" style={{ fontSize: '0.7rem' }}>WORKBENCH</span></button>
-                           <h2 style={{ fontSize: '1.1rem', fontWeight: '700', color: '#fff', maxWidth: isFullReader ? '600px' : '400px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selectedNewsletter.subject}</h2>
+               <motion.div initial={{ scale: 0.98 }} animate={{ scale: 1, height: (isFullReader || isMobile) ? '100vh' : '92vh', width: (isFullReader || isMobile) ? '100vw' : '1200px' }} className={(isFullReader || isMobile) ? '' : 'glass-card'} style={{ background: '#000', overflowY: 'auto', display: 'flex', flexDirection: (isMobile && !isFullReader) ? 'column' : 'row', position: 'relative', border: (isFullReader || isMobile) ? 'none' : '1px solid var(--glass-border)', borderRadius: (isFullReader || isMobile) ? '0' : '24px' }} onClick={e => e.stopPropagation()}>
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, height: (isMobile && !isFullReader) ? '50vh' : 'auto' }}>
+                     <header style={{ padding: isMobile ? '16px 20px' : '24px 40px', borderBottom: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '10px' : '20px', flex: 1 }}>
+                           {!isMobile && <button onClick={() => setIsZenMode(!isZenMode)} style={{ background: isZenMode ? '#fff' : 'transparent', border: '1px solid var(--glass-border)', borderRadius: '10px', padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: isZenMode ? '#000' : '#fff' }}><Zap size={14} /><span className="mono" style={{ fontSize: '0.7rem' }}>ZEN</span></button>}
+                           {!isMobile && <button onClick={runDeepScan} disabled={isSummarizing} style={{ background: 'transparent', border: '1px solid var(--glass-border)', borderRadius: '10px', padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: '#fff' }}><Telescope size={14} /> <span className="mono" style={{ fontSize: '0.7rem' }}>DEEP SCAN</span></button>}
+                           <button onClick={() => setIsNotesOpen(!isNotesOpen)} style={{ background: isNotesOpen ? '#fff' : 'transparent', border: '1px solid var(--glass-border)', borderRadius: '10px', padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: isNotesOpen ? '#000' : '#fff' }}><Edit3 size={14} /> {!isMobile && <span className="mono" style={{ fontSize: '0.7rem' }}>WORKBENCH</span>}</button>
+                           <h2 style={{ fontSize: isMobile ? '0.9rem' : '1.1rem', fontWeight: '700', color: '#fff', maxWidth: isMobile ? '150px' : '400px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selectedNewsletter.subject}</h2>
                         </div>
-                        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', gap: isMobile ? '10px' : '16px', alignItems: 'center' }}>
                            <button onClick={() => toggleHeartNewsletter(selectedNewsletter.id, !!selectedNewsletter.isFavorite)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: selectedNewsletter.isFavorite ? '#ef4444' : '#fff' }}><Heart size={20} fill={selectedNewsletter.isFavorite ? '#ef4444' : 'transparent'} /></button>
-                           <button onClick={() => setIsFullReader(!isFullReader)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#fff' }}>{isFullReader ? <Minimize2 size={20} /> : <Maximize2 size={20} />}</button>
+                           {!isMobile && <button onClick={() => setIsFullReader(!isFullReader)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#fff' }}>{isFullReader ? <Minimize2 size={20} /> : <Maximize2 size={20} />}</button>}
                            <button onClick={() => setSelectedNewsletter(null)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#fff' }}><LucideXCircle size={24} /></button>
                         </div>
                      </header>
@@ -526,7 +535,7 @@ export default function App() {
                         </div>
                         <AnimatePresence>
                           {isNotesOpen && (
-                            <motion.div initial={{ width: 0, opacity: 0 }} animate={{ width: isFullReader ? '600px' : '450px', opacity: 1 }} exit={{ width: 0, opacity: 0 }} style={{ height: '100%', borderLeft: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.02)', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+                            <motion.div initial={{ width: 0, opacity: 0 }} animate={{ width: (isFullReader || isMobile) ? (isMobile ? '100%' : '600px') : '450px', opacity: 1 }} exit={{ width: 0, opacity: 0 }} style={{ height: (isMobile && !isFullReader) ? '50vh' : '100%', borderLeft: isMobile ? 'none' : '1px solid var(--glass-border)', borderTop: (isMobile && !isFullReader) ? '1px solid var(--glass-border)' : 'none', background: 'rgba(255,255,255,0.02)', display: 'flex', flexDirection: 'column', position: 'relative' }}>
                                {/* Tactical Toolbar */}
                                <div style={{ padding: '20px 32px', borderBottom: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(10,10,10,0.5)', backdropFilter: 'blur(10px)' }}>
                                   <div style={{ display: 'flex', gap: '8px' }}>

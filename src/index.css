@@ -40,6 +40,12 @@ body {
   padding: 40px 20px;
 }
 
+@media (max-width: 768px) {
+  .layout-container {
+    padding: 20px 16px;
+  }
+}
+
 .glass-card {
   background: var(--bg-card);
   border: 1px solid var(--glass-border);
@@ -58,6 +64,16 @@ body {
   padding: 60px 40px;
   margin-bottom: 40px;
   border-bottom: 1px solid var(--glass-border);
+}
+
+@media (max-width: 768px) {
+  .hero-stats {
+    padding: 30px 20px;
+    margin-bottom: 20px;
+    display: flex !important;
+    flex-direction: column;
+    gap: 30px;
+  }
 }
 
 .btn-primary {
@@ -129,6 +145,13 @@ body {
   margin: 10px 0;
 }
 
+@media (max-width: 768px) {
+  .stat-value {
+    font-size: 2.5rem;
+    letter-spacing: -1px;
+  }
+}
+
 .nav-floating {
   position: fixed;
   bottom: 32px;
@@ -143,6 +166,16 @@ body {
   gap: 8px;
   z-index: 1000;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  max-width: 90vw;
+}
+
+@media (max-width: 768px) {
+  .nav-floating {
+    bottom: 16px;
+    padding: 6px;
+    gap: 4px;
+    border-radius: 16px;
+  }
 }
 
 .nav-item {
@@ -155,6 +188,17 @@ body {
   gap: 10px;
   font-weight: 600;
   color: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+  .nav-item {
+    padding: 10px 14px;
+    border-radius: 12px;
+    gap: 6px;
+  }
+  .nav-item span {
+    display: none;
+  }
 }
 
 .nav-item.active {
