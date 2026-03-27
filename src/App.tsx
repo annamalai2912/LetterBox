@@ -34,14 +34,6 @@ import { saveSubscriptions, getSubscriptions, saveNewsletters, getNewsletters, u
 import { NEWSLETTER_RECOMMENDATIONS, type Recommendation } from './lib/recommendations';
 import type { Subscription, Newsletter } from './lib/db';
 
-const Logo = ({ size = 24 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="3" y="5" width="18" height="14" rx="3" stroke="currentColor" strokeWidth="2" />
-    <path d="M7 12H9L10.5 9L13.5 15L15 12H17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    <circle cx="12" cy="12" r="9" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
-  </svg>
-);
-
 export default function App() {
   const [user, setUser] = useState<any>(null);
   const [view, setView] = useState<'dashboard' | 'reader' | 'favorites' | 'vault' | 'settings'>('dashboard');
