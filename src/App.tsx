@@ -56,9 +56,9 @@ export default function App() {
   // Workbench & Intel States
   const [isNotesOpen, setIsNotesOpen] = useState(false);
   const [isSummarizing, setIsSummarizing] = useState(false);
-  const [, setIsDrafting] = useState(false);
+  const [isDrafting, setIsDrafting] = useState(false);
   const [currentNote, setCurrentNote] = useState('');
-  const [ , setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
 
   // Feed Filter States
   const [feedCategory, setFeedCategory] = useState<string>('All');
@@ -432,6 +432,7 @@ export default function App() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flex: 1 }}>
                            <button onClick={() => setIsZenMode(!isZenMode)} style={{ background: isZenMode ? '#fff' : 'transparent', border: '1px solid var(--glass-border)', borderRadius: '10px', padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: isZenMode ? '#000' : '#fff' }}><Zap size={14} /><span className="mono" style={{ fontSize: '0.7rem' }}>ZEN</span></button>
                            <button onClick={runDeepScan} disabled={isSummarizing} style={{ background: 'transparent', border: '1px solid var(--glass-border)', borderRadius: '10px', padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: '#fff' }}><Telescope size={14} /> <span className="mono" style={{ fontSize: '0.7rem' }}>DEEP SCAN</span></button>
+                           <button onClick={() => setIsNotesOpen(!isNotesOpen)} style={{ background: isNotesOpen ? '#fff' : 'transparent', border: '1px solid var(--glass-border)', borderRadius: '10px', padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: isNotesOpen ? '#000' : '#fff' }}><Edit3 size={14} /> <span className="mono" style={{ fontSize: '0.7rem' }}>WORKBENCH</span></button>
                            <h2 style={{ fontSize: '1.1rem', fontWeight: '700', color: '#fff', maxWidth: isFullReader ? '600px' : '400px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selectedNewsletter.subject}</h2>
                         </div>
                         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
@@ -459,8 +460,13 @@ export default function App() {
                                   <div className="mono" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Edit3 size={14} /> WORKBENCH</div>
                                   <button onClick={shareIntelligenceReport} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#fff' }}><FileText size={16} /></button>
                                </div>
-                               <textarea style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '1rem', lineHeight: '1.8', padding: '32px', resize: 'none' }} placeholder="Capture intelligence..." value={currentNote} onChange={(e) => setCurrentNote(e.target.value)} onBlur={saveNotes}/>
-                               <div style={{ padding: '32px' }}><button onClick={saveNotes} className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}><Save size={16} /> LOG INTELLIGENCE</button></div>
+                               <textarea style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '1rem', lineHeight: '1.8', padding: '32px', resize: 'none' }} placeholder={isDrafting ? "Intelligence extraction in progress..." : "Capture intelligence..."} value={currentNote} onChange={(e) => setCurrentNote(e.target.value)} onBlur={saveNotes}/>
+                               <div style={{ padding: '32px' }}>
+                                 <button onClick={saveNotes} className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+                                    {saveStatus === 'saving' ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />} 
+                                    {saveStatus === 'saved' ? ' LOGGED' : ' LOG INTELLIGENCE'}
+                                 </button>
+                               </div>
                             </motion.div>
                           )}
                         </AnimatePresence>
