@@ -12,7 +12,6 @@ import {
   Heart,
   Archive,
   Zap,
-  Activity,
   Maximize2,
   Minimize2,
   Search,
@@ -34,6 +33,14 @@ import { fetchNewsletters, extractSubscriptions, extractDraftInsights } from './
 import { saveSubscriptions, getSubscriptions, saveNewsletters, getNewsletters, updateSubscription, updateNewsletter } from './lib/db';
 import { NEWSLETTER_RECOMMENDATIONS, type Recommendation } from './lib/recommendations';
 import type { Subscription, Newsletter } from './lib/db';
+
+const Logo = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="3" y="5" width="18" height="14" rx="3" stroke="currentColor" strokeWidth="2" />
+    <path d="M7 12H9L10.5 9L13.5 15L15 12H17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx="12" cy="12" r="9" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+  </svg>
+);
 
 export default function App() {
   const [user, setUser] = useState<any>(null);
@@ -419,8 +426,8 @@ export default function App() {
         
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-              <Activity size={20} color="#fff" />
-              <div className="mono" style={{ color: '#fff', fontSize: '0.9rem', fontWeight: '700' }}>LB // INTELLIGENCE</div>
+              <Logo size={28} />
+              <div className="mono" style={{ color: '#fff', fontSize: '0.9rem', fontWeight: '800', letterSpacing: '0.1em' }}>LETTERBOX // INTELLIGENCE</div>
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px', height: '24px', paddingLeft: '20px', borderLeft: '1px solid var(--glass-border)' }}>
                  {pulseData.map((h, i) => (
                     <div key={i} style={{ width: '4px', height: `${h}%`, background: 'white', opacity: 0.1 + (h / 100) * 0.9, borderRadius: '1px' }} />
@@ -454,7 +461,6 @@ export default function App() {
                  </div>
               </div>
 
-              {/* Intelligence Discovery Row */}
               <div style={{ marginBottom: '48px' }}>
                  <div className="mono" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                    <Compass size={16} /> INTELLIGENCE DISCOVERY 
