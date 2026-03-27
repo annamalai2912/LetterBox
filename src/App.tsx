@@ -59,6 +59,9 @@ export default function App() {
   const [isDrafting, setIsDrafting] = useState(false);
   const [currentNote, setCurrentNote] = useState('');
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [isDoodleMode, setIsDoodleMode] = useState(false);
+  const [doodleColor, setDoodleColor] = useState('#ffffff');
+  const [isDrawing, setIsDrawing] = useState(false);
 
   // Feed Filter States
   const [feedCategory, setFeedCategory] = useState<string>('All');
@@ -245,8 +248,9 @@ export default function App() {
         setIsDrafting(true);
         setTimeout(async () => {
            const draft = extractDraftInsights(n.bodyHtml || '', n.snippet);
-           setCurrentNote(draft);
-           await updateNewsletter(n.id, { notes: draft });
+           const htmlDraft = `<div>[DRAFTED BY LETTERBOX]</div><br/>${draft.split('\n').map(line => `<div>• ${line}</div>`).join('')}`;
+           setCurrentNote(htmlDraft);
+           await updateNewsletter(n.id, { notes: htmlDraft });
            await loadFromDB();
            setIsDrafting(false);
         }, 1200);
@@ -275,6 +279,73 @@ export default function App() {
      const report = `LETTERBOX INTELLIGENCE REPORT\n\nORIGIN: ${selectedNewsletter.sender}\nSUBJECT: ${selectedNewsletter.subject}\n\nSUMMARY:\n${selectedNewsletter.aiSummary}\n\nWORKBENCH NOTES:\n${currentNote}\n\nEXTRACTED INTEL:\n${selectedNewsletter.extractedLinks?.join('\n') || 'None'}\n\n-- End of Transmission --`;
      navigator.clipboard.writeText(report);
      alert('Intelligence Report copied to clipboard.');
+  };
+
+   const handlePaste = (e: React.ClipboardEvent) => {
+    const items = e.clipboardData.items;
+    for (const item of items) {
+      if (item.type.indexOf('image') !== -1) {
+        const file = item.getAsFile();
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const dataUrl = event.target?.result as string;
+            const imgHtml = `<div style="margin: 20px 0; border: 1px solid var(--glass-border); border-radius: 12px; overflow: hidden; box-shadow: 0 0 20px rgba(255,255,255,0.05);"><img src="${dataUrl}" style="max-width: 100%; display: block;" /></div>`;
+            document.execCommand('insertHTML', false, imgHtml);
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+    }
+  };
+
+  const applyFormatting = (command: string, value?: string) => {
+    document.execCommand(command, false, value);
+    const editor = document.getElementById('letterbox-tactical-editor');
+    if (editor) setCurrentNote(editor.innerHTML);
+  };
+
+  const clearDoodle = () => {
+    const canvas = document.getElementById('doodle-canvas') as HTMLCanvasElement;
+    const ctx = canvas?.getContext('2d');
+    if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
+  const saveDoodleToIntel = () => {
+    const canvas = document.getElementById('doodle-canvas') as HTMLCanvasElement;
+    if (!canvas) return;
+    const dataUrl = canvas.toDataURL();
+    const doodleHtml = `<div style="margin: 20px 0; transition: all 0.3s; cursor: pointer;"><img src="${dataUrl}" style="max-width: 100%; filter: drop-shadow(0 0 10px rgba(255,255,255,0.1));" /></div>`;
+    document.execCommand('insertHTML', false, doodleHtml);
+    clearDoodle();
+    setIsDoodleMode(false);
+  };
+
+  const handleDoodleStart = (e: any) => {
+    setIsDrawing(true);
+    const canvas = e.target as HTMLCanvasElement;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    ctx.beginPath();
+    ctx.strokeStyle = doodleColor;
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.moveTo(x, y);
+  };
+
+  const handleDoodling = (e: any) => {
+    if (!isDrawing) return;
+    const canvas = e.target as HTMLCanvasElement;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    ctx.lineTo(x, y);
+    ctx.stroke();
   };
 
   const runDeepScan = async () => {
@@ -455,17 +526,85 @@ export default function App() {
                         </div>
                         <AnimatePresence>
                           {isNotesOpen && (
-                            <motion.div initial={{ width: 0, opacity: 0 }} animate={{ width: '450px', opacity: 1 }} exit={{ width: 0, opacity: 0 }} style={{ height: '100%', borderLeft: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.02)', display: 'flex', flexDirection: 'column' }}>
-                               <div style={{ padding: '32px', borderBottom: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                  <div className="mono" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Edit3 size={14} /> WORKBENCH</div>
-                                  <button onClick={shareIntelligenceReport} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#fff' }}><FileText size={16} /></button>
+                            <motion.div initial={{ width: 0, opacity: 0 }} animate={{ width: isFullReader ? '600px' : '450px', opacity: 1 }} exit={{ width: 0, opacity: 0 }} style={{ height: '100%', borderLeft: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.02)', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+                               {/* Tactical Toolbar */}
+                               <div style={{ padding: '20px 32px', borderBottom: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(10,10,10,0.5)', backdropFilter: 'blur(10px)' }}>
+                                  <div style={{ display: 'flex', gap: '8px' }}>
+                                     <button onClick={() => applyFormatting('hiliteColor', '#1e293b')} className="mono" style={{ padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--glass-border)', background: 'transparent', color: '#fff', cursor: 'pointer', fontSize: '0.65rem' }}>HILITE</button>
+                                     <button onClick={() => setIsDoodleMode(!isDoodleMode)} style={{ background: isDoodleMode ? '#fff' : 'transparent', color: isDoodleMode ? '#000' : '#fff', borderRadius: '6px', border: '1px solid var(--glass-border)', padding: '6px', cursor: 'pointer' }}><Edit3 size={14} /></button>
+                                  </div>
+                                  <div style={{ display: 'flex', gap: '8px' }}>
+                                    <button onClick={shareIntelligenceReport} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#fff' }}><FileText size={16} /></button>
+                                  </div>
                                </div>
-                               <textarea style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '1rem', lineHeight: '1.8', padding: '32px', resize: 'none' }} placeholder={isDrafting ? "Intelligence extraction in progress..." : "Capture intelligence..."} value={currentNote} onChange={(e) => setCurrentNote(e.target.value)} onBlur={saveNotes}/>
-                               <div style={{ padding: '32px' }}>
-                                 <button onClick={saveNotes} className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
-                                    {saveStatus === 'saving' ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />} 
-                                    {saveStatus === 'saved' ? ' LOGGED' : ' LOG INTELLIGENCE'}
-                                 </button>
+
+                               <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+                                  <div 
+                                    id="letterbox-tactical-editor"
+                                    contentEditable 
+                                    onPaste={handlePaste}
+                                    onBlur={(e) => { setCurrentNote(e.currentTarget.innerHTML); saveNotes(); }}
+                                    dangerouslySetInnerHTML={{ __html: currentNote }}
+                                    style={{ 
+                                      height: '100%', 
+                                      width: '100%', 
+                                      padding: '32px', 
+                                      outline: 'none', 
+                                      color: '#fff', 
+                                      fontSize: '1rem', 
+                                      lineHeight: '1.8', 
+                                      overflowY: 'auto' 
+                                    }} 
+                                  />
+
+                                  {isDrafting && (
+                                    <div style={{ position: 'absolute', top: '32px', left: '32px', color: 'var(--accent)', fontSize: '0.65rem' }} className="mono">
+                                       <Loader2 className="animate-spin" size={12} style={{ marginRight: '8px' }} /> 
+                                       EXTRACTING INTELLIGENCE...
+                                    </div>
+                                  )}
+
+                                  {isSummarizing && (
+                                    <div style={{ position: 'absolute', top: '50px', left: '32px', color: '#3b82f6', fontSize: '0.65rem' }} className="mono">
+                                       <Loader2 className="animate-spin" size={12} style={{ marginRight: '8px' }} /> 
+                                       DEEP SCAN IN PROGRESS...
+                                    </div>
+                                  )}
+
+                                  <AnimatePresence>
+                                     {isDoodleMode && (
+                                       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(2px)', zIndex: 10, cursor: 'crosshair', display: 'flex', flexDirection: 'column' }}>
+                                          <div style={{ padding: '12px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#000' }}>
+                                             <div className="mono" style={{ fontSize: '0.6rem' }}>TACTICAL SKETCH OVERLAY</div>
+                                             <div style={{ display: 'flex', gap: '8px' }}>
+                                                <button onClick={() => setDoodleColor('#ffffff')} style={{ width: '16px', height: '16px', borderRadius: '8px', background: '#fff', border: doodleColor === '#ffffff' ? '2px solid var(--accent)' : 'none' }} />
+                                                <button onClick={() => setDoodleColor('#3b82f6')} style={{ width: '16px', height: '16px', borderRadius: '8px', background: '#3b82f6', border: doodleColor === '#3b82f6' ? '2px solid var(--accent)' : 'none' }} />
+                                                <button onClick={() => setDoodleColor('#ef4444')} style={{ width: '16px', height: '16px', borderRadius: '8px', background: '#ef4444', border: doodleColor === '#ef4444' ? '2px solid var(--accent)' : 'none' }} />
+                                                <div style={{ width: '1px', background: 'var(--glass-border)', margin: '0 8px' }} />
+                                                <button onClick={clearDoodle} className="mono" style={{ border: 'none', background: 'transparent', color: '#fff', cursor: 'pointer', fontSize: '0.6rem' }}>CLEAR</button>
+                                                <button onClick={saveDoodleToIntel} className="mono" style={{ background: '#fff', color: '#000', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.6rem', fontWeight: 'bold' }}>BURN TO INTEL</button>
+                                             </div>
+                                          </div>
+                                          <canvas 
+                                            id="doodle-canvas"
+                                            width="600"
+                                            height="800"
+                                            onMouseDown={handleDoodleStart}
+                                            onMouseMove={handleDoodling}
+                                            onMouseUp={() => setIsDrawing(false)}
+                                            onMouseLeave={() => setIsDrawing(false)}
+                                            style={{ flex: 1, width: '100%', height: '100%' }}
+                                          />
+                                       </motion.div>
+                                     )}
+                                  </AnimatePresence>
+                               </div>
+
+                               <div style={{ padding: '32px', borderTop: '1px solid var(--glass-border)' }}>
+                                  <button onClick={saveNotes} className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+                                     {saveStatus === 'saving' ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />} 
+                                     {saveStatus === 'saved' ? ' INTEL SECURED' : ' CAPTURE INTELLIGENCE'}
+                                  </button>
                                </div>
                             </motion.div>
                           )}
