@@ -1,5 +1,7 @@
 # LetterBox | Intelligence Command Center
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2F%5BUSER_GITHUB_URL_HERE%5D&env=VITE_GOOGLE_CLIENT_ID)
+
 **LetterBox** is a high-fidelity, intelligence-driven information command center designed for modern knowledge workers. It transforms your cluttered newsletter subscriptions into a high-precision, distraction-free intelligence flow.
 
 ![LetterBox Intelligence Dashboard](https://github.com/letterbox/branding/blob/main/hero.png?raw=true)
