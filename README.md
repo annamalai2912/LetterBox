@@ -1,74 +1,75 @@
-# LetterBox | Intelligence Command Center
+# LetterBox | Intelligence Command Center 🛰️
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2F%5BUSER_GITHUB_URL_HERE%5D&env=VITE_GOOGLE_CLIENT_ID)
+**Stop reading newsletters. Start capturing intelligence.**
 
-**LetterBox** is a high-fidelity, intelligence-driven information command center designed for modern knowledge workers. It transforms your cluttered newsletter subscriptions into a high-precision, distraction-free intelligence flow.
+LetterBox is a high-performance, local-first dashboard designed for the information-heavy digital age. It transforms your cluttered Gmail inbox into a tactical feed, using automated extraction and rich-text workbench features to turn content into actionable insights.
 
-![LetterBox Intelligence Dashboard](https://github.com/letterbox/branding/blob/main/hero.png?raw=true)
+![Dashboard Overview](./public/screenshots/dashboard.png)
 
-## 📡 Core Intelligence Suite
+## 📡 The Vision
+We live in an era of information overload. LetterBox was built to solve this by providing a "Premium Void" experience—a distraction-free, high-fidelity environment where you can process, analyze, and archive newsletters with surgical precision.
 
-LetterBox is built on the philosophy of **Maximum Information Density, Zero Friction.**
+## 🛠️ Key Tactical Features
 
-### 📈 Intelligence Pulse (Heatmap)
-Visual heatmap tracking your transmission frequency over the last 7 days. Understand your information load at a glance.
+### 🧠 The Tactical Workbench
+Our most powerful feature. It’s not just a notes app; it’s a briefing builder.
+*   **Visual Capture**: Copy and paste images/screenshots directly into your notes.
+*   **Signal Highlighting**: Mark critical data points with the built-in hiliting engine.
+*   **Sketch Overlay**: Need to map out a connection? Use **Doodle Mode** to draw directly on your briefing.
+*   **Auto-Extraction**: LetterBox automatically pulls major points from every newsletter the moment you open it.
 
-### 🧹 Smart Purge (Node Decommissioning)
-Automatically identifies high-frequency, low-engagement "Dead Nodes." Batch-archive content from underperforming senders with a single command.
+![Reading View & Workbench](./public/screenshots/reading_view.png)
 
-### 🛰️ Discovery Engine
-Proactive recommendations for premium intelligence sources (newsletters) tailored to your existing high-signal categories.
+### 📊 Intelligence Dashboard
+Stay on top of your information flow with real-time metrics.
+*   **Signal Index**: Track your engagement levels across all "Active Nodes" (senders).
+*   **Smart Purge**: Automatically identify and decommission "Dead Nodes"—newsletters you never read that are just taking up space.
+*   **Pulse Graph**: A visual heatmap of your information intake over the last 7 days.
 
-### 🛠️ Intelligence Workbench
-Integrated drafting and insight extraction tool. Automatically summarizes transmissions and extracts key links into a persistent workbench.
+### 🕵️ Global Search & Retrieval
+Find anything instantly. The integrated search engine scans subjects, senders, and content across your entire local "Vault."
 
-### 👁️ ZEN & GHOST Modes
-- **ZEN**: Immersive, distraction-free reading experience.
-- **GHOST**: Privacy-first transmission access that suppresses read-receipts.
-
----
-
-## 🛡️ Privacy & Security
-- **Local-First Architecture**: Your data is stored locally in `IndexedDB`. No intermediate servers, no data harvesting.
-- **Direct Integration**: Secure, direct OAuth 2.0 communication with the Gmail API.
-- **Privacy-First**: No external tracking, no third-party analytics.
+![Reader Feed](./public/screenshots/reader_feed.png)
 
 ---
 
-## 🛠️ Tech Stack
-- **Framework**: [React](https://reactjs.org/) + [Vite](https://vitejs.dev/)
-- **State & Logic**: TypeScript, [Framer Motion](https://www.framer.com/motion/)
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **Database**: [idb](https://github.com/jakearchibald/idb) (IndexedDB Wrapper)
-- **Authentication**: [@react-oauth/google](https://www.npmjs.com/package/@react-oauth/google)
+## 🏗️ Technology Stack
+*   **Frontend**: React 19 + Vite + TypeScript (Type-safe briefings).
+*   **Animation**: Framer Motion (Smooth tactical transitions).
+*   **Icons**: Lucide React (Clean, functional iconography).
+*   **Database**: IndexedDB (Native browser storage for ultra-fast, offline-first access).
+*   **API**: Secure Gmail OAuth 2.0 Integration.
 
 ---
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- Node.js (v18+)
-- Google Cloud Console Project (with Gmail API enabled)
-
-### Installation
-1. Clone the repository.
-2. Install dependencies:
+### Local Setup
+1. **Clone the Repo**:
+   ```bash
+   git clone https://github.com/annamalai2912/LetterBox.git
+   cd LetterBox
+   ```
+2. **Install Intel**:
    ```bash
    npm install
    ```
-3. Create a `.env` file and add your Google Client ID:
+3. **Configure Environment**:
+   Create a `.env` file in the root and add your Google Client ID:
    ```env
-   VITE_GOOGLE_CLIENT_ID=your_client_id_here
+   VITE_GOOGLE_CLIENT_ID=your_google_client_id_here
    ```
-4. Start the development server:
+4. **Boot the System**:
    ```bash
    npm run dev
    ```
 
-## 🌐 Deployment
-For detailed deployment instructions for **Vercel** and **Google OAuth**, see [DEPLOYMENT.md](./DEPLOYMENT.md).
+---
+
+## 🛡️ Privacy First
+LetterBox is **local-first**. All your newsletters, notes, and sketches stay in your browser's `IndexedDB`. No data is sent to our servers. Your intelligence is *your* intelligence.
 
 ---
 
-## 📜 License
-MIT License. Built for the intelligence era.
+**Built for the curious. Designed for the focused.**
+[Deploy to Vercel](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fannamalai2912%2FLetterBox)
