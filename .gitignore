@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
+GOOGLE_VERIFICATION_GUIDE.md
+whatsapp.jpeg
 
 # Editor directories and files
 .vscode/*

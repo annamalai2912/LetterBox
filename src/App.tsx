@@ -426,7 +426,7 @@ export default function App() {
         
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-              <Logo size={28} />
+              <img src="/logo.jpeg" alt="LetterBox Logo" style={{ width: '32px', height: '32px', borderRadius: '8px', objectFit: 'cover', border: '1px solid var(--glass-border)' }} />
               <div className="mono" style={{ color: '#fff', fontSize: '0.9rem', fontWeight: '800', letterSpacing: '0.1em' }}>LETTERBOX // INTELLIGENCE</div>
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px', height: '24px', paddingLeft: '20px', borderLeft: '1px solid var(--glass-border)' }}>
                  {pulseData.map((h, i) => (
